@@ -1,0 +1,12 @@
+
+dependencies:
+- base
+- pretty
+
+ghc-options: -Wall -freverse-errors -Wno-orphans
+
+language: GHC2021
+
+library:
+  source-dirs:
+  - src

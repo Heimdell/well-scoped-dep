@@ -1,0 +1,38 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           well-scoped-dep
+version:        0.0.0
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Eval
+      MyLib
+      Name
+      Nat
+      Pretty
+      Runtime
+      Runtime.Substitution
+      Runtime.Value
+      Runtime.Value.Substitution
+      Runtime.Value.Thinning
+      Scoped
+      Scoped.Pretty
+      Scoped.Structure
+      Thin
+      Vec
+  other-modules:
+      Paths_well_scoped_dep
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -freverse-errors -Wno-orphans
+  build-depends:
+      base
+    , pretty
+  default-language: GHC2021

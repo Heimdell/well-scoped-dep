@@ -1,0 +1,9 @@
+name: lang-0.1
+include: src
+depend:
+  standard-library-2.1
+flags:
+  --guardedness
+  --postfix-projections
+  --hidden-argument-puns
+  -WnoUnsupportedIndexedMatch
