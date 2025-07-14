@@ -8,7 +8,7 @@ module Runtime.Value.Thinning () where
 
 import Prelude hiding (fst, snd, uncurry)
 
-import Runtime.Value
+import Runtime.Value.Structure
 import Thin
 
 instance Thinning Value where
@@ -18,7 +18,7 @@ instance Thinning Value where
     ValueU                 -> ValueU
     ValuePi      n ty res  -> ValuePi       n (thin th ty) (thin (Keep th) res)
     ValueSigma   n fst snd -> ValueSigma    n (thin th fst) (thin (Keep th) snd)
-    ValueEq        a x y   -> ValueEq      (thin th a) (thin th x) (thin th y)
+    ValueEq          x y   -> ValueEq      (thin th x) (thin th y)
     ValueLam     n body    -> ValueLam      n (thin (Keep th) body)
     ValuePair    fst snd   -> ValuePair     (thin th fst) (thin th snd)
     ValueRefl              -> ValueRefl

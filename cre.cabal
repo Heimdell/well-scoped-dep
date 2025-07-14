@@ -1,0 +1,89 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           cre
+version:        0.0.0
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Eval
+      Lexeme
+      Name
+      Nat
+      Parser
+      Parsing
+      Phase.Raw
+      Phase.Raw.Pretty
+      Phase.Raw.Structure
+      Phase.Scoped
+      Phase.Scoped.Pretty
+      Phase.Scoped.Structure
+      Pos
+      Pretty
+      Runtime
+      Runtime.Substitution
+      Runtime.Value
+      Runtime.Value.Pretty
+      Runtime.Value.Structure
+      Runtime.Value.Substitution
+      Runtime.Value.Thinning
+      Thin
+      Vec
+  other-modules:
+      Paths_cre
+  hs-source-dirs:
+      src
+  default-extensions:
+      OverloadedRecordDot
+      NoFieldSelectors
+      DuplicateRecordFields
+      LambdaCase
+      BlockArguments
+      GADTs
+      DataKinds
+      ExplicitNamespaces
+      OverloadedStrings
+      DerivingStrategies
+      ViewPatterns
+  ghc-options: -Wall -freverse-errors -Wno-orphans
+  build-depends:
+      base
+    , containers
+    , mtl
+    , pretty
+    , transformers
+  default-language: GHC2021
+
+executable cre
+  main-is: Main.hs
+  other-modules:
+      Paths_cre
+  hs-source-dirs:
+      app
+  default-extensions:
+      OverloadedRecordDot
+      NoFieldSelectors
+      DuplicateRecordFields
+      LambdaCase
+      BlockArguments
+      GADTs
+      DataKinds
+      ExplicitNamespaces
+      OverloadedStrings
+      DerivingStrategies
+      ViewPatterns
+  ghc-options: -Wall -freverse-errors -Wno-orphans
+  build-depends:
+      base
+    , containers
+    , cre
+    , mtl
+    , pretty
+    , transformers
+  default-language: GHC2021

@@ -25,7 +25,7 @@
 
   По-видимому, сделать на этом HIT не получится.
 -}
-module Scoped.Structure
+module Phase.Scoped.Structure
   ( Expr (..)
   ) where
 
@@ -65,7 +65,7 @@ data Expr (n :: Nat)
   | -- | Пропозициональное равенство
     --   @<ty> x = y@
     ExprEq
-      { ty, x, y :: Expr n }
+      { x, y :: Expr n }
 
   | -- | Лямбда-функция
     --   @\argName -> body@

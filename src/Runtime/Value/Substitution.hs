@@ -16,7 +16,7 @@ import Prelude hiding (fst, snd, uncurry)
 import Nat
 import Vec
 
-import Runtime.Value
+import Runtime.Value.Structure
 import Runtime.Substitution
 import Name
 
@@ -27,7 +27,7 @@ instance Substitutes Value where
     ValueU                 -> ValueU
     ValuePi      n ty res  -> ValuePi    n (subst s ty) (extend s `subst` res)
     ValueSigma   n fst snd -> ValueSigma n (subst s fst) (extend s `subst` snd)
-    ValueEq      a x y     -> ValueEq    (subst s a) (subst s x) (subst s y)
+    ValueEq        x y     -> ValueEq    (subst s x) (subst s y)
     ValueLam     n body    -> ValueLam   n (extend s `subst` body)
     ValuePair    fst snd   -> ValuePair  (subst s fst) (subst s snd)
     ValueRefl              -> ValueRefl

@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE ExplicitNamespaces #-}
-
 {- |
   Разбавление контекстов, оно же отношение подпоследовательности над контекстами.
 

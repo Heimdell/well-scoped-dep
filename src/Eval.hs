@@ -12,7 +12,7 @@ import Prelude hiding (fst, snd, uncurry)
 import Runtime
 import Nat
 import Vec
-import Scoped
+import Phase.Scoped
 
 {- |
   Переаод выражения в нормальную форму.
@@ -24,7 +24,7 @@ eval = \case
   ExprU                   -> ValueU
   ExprPi      n arg res   -> ValuePi      n (eval arg) (eval res)
   ExprSigma   n fst snd   -> ValueSigma   n (eval fst) (eval snd)
-  ExprEq      a x y       -> ValueEq      (eval a) (eval x) (eval y)
+  ExprEq        x y       -> ValueEq      (eval x) (eval y)
   ExprLam     n body      -> ValueLam     n (eval body)
   ExprPair    fst snd     -> ValuePair    (eval fst) (eval snd)
   ExprRefl                -> ValueRefl

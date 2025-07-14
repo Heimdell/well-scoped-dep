@@ -14,7 +14,7 @@ module Runtime.Substitution
   ) where
 
 import Vec
-import Runtime.Value
+import Runtime.Value.Structure
 import Nat
 import Thin
 import Runtime.Value.Thinning ()

@@ -3,14 +3,14 @@
 {-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Scoped.Pretty () where
+module Phase.Scoped.Pretty () where
 
 import Prelude hiding (fst, snd)
 
 import Pretty
 import Vec
 
-import Scoped.Structure
+import Phase.Scoped.Structure
 import Data.Foldable
 import Data.Functor ((<&>))
 
@@ -28,10 +28,8 @@ instance PrettyInContext Expr where
       braces (pPrint fstName <+> ":" <+> pic names fstTy <.> "," \\
         pic (fstName :> names) sndTy)
 
-    ExprEq {ty, x, y} ->
-      "<" <.> pic names ty <.> ">"
-        <+> pic names x <+> "="
-        <+> pic names y
+    ExprEq {x, y} ->
+      parens (pic names x <+> "=" <+> pic names y)
 
     ExprLam {argName, body} ->
       "\\" <.> pPrint argName <+> "->" \\

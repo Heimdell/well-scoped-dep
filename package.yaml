@@ -1,7 +1,25 @@
 
+name: cre
+
 dependencies:
 - base
+- containers
 - pretty
+- mtl
+- transformers
+
+default-extensions:
+- OverloadedRecordDot
+- NoFieldSelectors
+- DuplicateRecordFields
+- LambdaCase
+- BlockArguments
+- GADTs
+- DataKinds
+- ExplicitNamespaces
+- OverloadedStrings
+- DerivingStrategies
+- ViewPatterns
 
 ghc-options: -Wall -freverse-errors -Wno-orphans
 
@@ -10,3 +28,11 @@ language: GHC2021
 library:
   source-dirs:
   - src
+
+executables:
+  cre:
+    main: Main.hs
+    source-dirs:
+    - app
+    dependencies:
+    - cre
