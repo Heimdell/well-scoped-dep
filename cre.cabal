@@ -12,9 +12,11 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Name
-      Nat
-      Parsing
+      Data.Name
+      Data.Nat
+      Data.Pos
+      Data.Thin
+      Data.Vec
       Pass.Eval
       Pass.Lexeme
       Pass.Parser
@@ -31,10 +33,8 @@ library
       Phase.Scoped
       Phase.Scoped.Pretty
       Phase.Scoped.Structure
-      Pos
-      Pretty
-      Thin
-      Vec
+      Text.Parsing
+      Text.Pretty
   other-modules:
       Paths_cre
   hs-source-dirs:

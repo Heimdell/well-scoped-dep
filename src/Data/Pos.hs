@@ -1,4 +1,4 @@
-module Pos where
+module Data.Pos where
 
 import Data.Function (on)
 import Control.Arrow

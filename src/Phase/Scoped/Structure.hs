@@ -29,10 +29,10 @@ module Phase.Scoped.Structure
   ( Expr (..)
   ) where
 
-import Nat
-import Thin
-import Vec
-import Name
+import Data.Nat
+import Data.Thin
+import Data.Vec
+import Data.Name
 
 {- |
   Программа на моделируемом языке.

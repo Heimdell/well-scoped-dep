@@ -1,7 +1,7 @@
 
-module Name where
+module Data.Name where
 
-import Pos
+import Data.Pos
 import Data.Function (on)
 
 data Name = Name

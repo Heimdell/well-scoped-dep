@@ -2,12 +2,13 @@ module Pass.Parser where
 
 import Prelude hiding (pi, uncurry)
 
-import Phase.Raw
-import Parsing
-import Name
+import Control.Applicative
+import Data.Name
 import Pass.Lexeme
 import Data.String
-import Control.Applicative
+import Text.Parsing
+
+import Phase.Raw
 
 type P = Parser LexemeType Lexeme
 

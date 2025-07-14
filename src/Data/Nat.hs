@@ -4,7 +4,7 @@
 {- |
   Натуральные числа.
 -}
-module Nat
+module Data.Nat
   ( -- * Тип
     Nat(..)
 

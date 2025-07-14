@@ -11,9 +11,9 @@ module Phase.Runtime.Value.Structure
   , Neutral (..)
   ) where
 
-import Nat
-import Thin
-import Name
+import Data.Nat
+import Data.Thin
+import Data.Name
 
 {- |
   Вычисленное значение.

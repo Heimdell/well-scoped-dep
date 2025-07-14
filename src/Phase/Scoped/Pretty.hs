@@ -7,12 +7,12 @@ module Phase.Scoped.Pretty () where
 
 import Prelude hiding (fst, snd)
 
-import Pretty
-import Vec
-
-import Phase.Scoped.Structure
+import Data.Vec
 import Data.Foldable
 import Data.Functor ((<&>))
+import Text.Pretty
+
+import Phase.Scoped.Structure
 
 instance PrettyInContext Expr where
   pic names = \case

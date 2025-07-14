@@ -6,10 +6,10 @@ module Phase.Runtime.Value.Pretty where
 
 import Prelude hiding (fst, snd)
 
-import Phase.Runtime.Value.Structure
+import Data.Vec
+import Text.Pretty
 
-import Pretty
-import Vec
+import Phase.Runtime.Value.Structure
 
 instance PrettyInContext Value where
   pic names = \case

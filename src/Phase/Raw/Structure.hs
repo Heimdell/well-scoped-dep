@@ -1,7 +1,7 @@
 
 module Phase.Raw.Structure where
 
-import Name
+import Data.Name
 
 {- |
   Программа на моделируемом языке.

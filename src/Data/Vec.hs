@@ -1,7 +1,7 @@
 {- |
   Вектор определённой длины.
 -}
-module Vec
+module Data.Vec
   ( -- * Тип
     Vec(..)
   , -- * Индексирование
@@ -10,8 +10,8 @@ module Vec
     (+++)
   ) where
 
-import Nat
-import Thin
+import Data.Nat
+import Data.Thin
 
 {- |
   Вектор из элементов @a@ длины @n@.

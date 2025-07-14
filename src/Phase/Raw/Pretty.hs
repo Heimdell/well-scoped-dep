@@ -5,9 +5,9 @@ module Phase.Raw.Pretty () where
 
 import Prelude hiding (fst, snd)
 
-import Phase.Raw.Structure
+import Text.Pretty
 
-import Pretty
+import Phase.Raw.Structure
 
 instance Pretty Expr where
   pPrint = \case

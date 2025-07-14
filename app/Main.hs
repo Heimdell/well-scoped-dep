@@ -1,9 +1,9 @@
 
-import System.Environment
-import Parsing
-import Pretty
 import Control.Applicative
 import Data.Foldable
+import System.Environment
+import Text.Parsing
+import Text.Pretty
 
 import Pass.Lexeme
 import Pass.Parser

@@ -13,12 +13,12 @@ module Phase.Runtime.Value.Substitution
 
 import Prelude hiding (fst, snd, uncurry)
 
-import Nat
-import Vec
+import Data.Nat
+import Data.Vec
+import Data.Name
 
 import Phase.Runtime.Value.Structure
 import Phase.Runtime.Substitution
-import Name
 
 instance Substitutes Value where
   subst :: KnownNat bs => Subst as bs -> Value as -> Value bs

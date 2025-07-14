@@ -10,8 +10,8 @@ module Pass.Eval (eval) where
 import Prelude hiding (fst, snd, uncurry)
 
 import Phase.Runtime
-import Nat
-import Vec
+import Data.Nat
+import Data.Vec
 import Phase.Scoped
 
 {- |

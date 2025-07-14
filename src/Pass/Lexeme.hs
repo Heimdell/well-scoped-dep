@@ -4,8 +4,8 @@ module Pass.Lexeme where
 
 import Data.Char
 
-import Pretty
-import Pos
+import Text.Pretty
+import Data.Pos
 
 data LexemeType
   = BigName   String

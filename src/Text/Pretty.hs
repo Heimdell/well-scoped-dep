@@ -1,4 +1,4 @@
-module Pretty
+module Text.Pretty
   ( module Text.PrettyPrint.HughesPJClass
   , PrettyInContext (pic)
   , (\\)
@@ -9,9 +9,9 @@ module Pretty
 
 import Text.PrettyPrint.HughesPJClass
 
-import Vec
-import Name
-import Pos
+import Data.Vec
+import Data.Name
+import Data.Pos
 import Data.Maybe
 
 class PrettyInContext p where

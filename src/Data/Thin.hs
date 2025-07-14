@@ -7,7 +7,7 @@
 
   Т.е., контекст - это количество связанных переменных в терме.
 -}
-module Thin
+module Data.Thin
   ( -- * Типы
     type (<=) (..)
   , Below
@@ -20,7 +20,7 @@ module Thin
     Thinning (thin)
   ) where
 
-import Nat
+import Data.Nat
 
 {- |
   Доказательство того, что @m@ это разбавленный контекст @n@.

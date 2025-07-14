@@ -8,8 +8,9 @@ module Phase.Runtime.Value.Thinning () where
 
 import Prelude hiding (fst, snd, uncurry)
 
+import Data.Thin
+
 import Phase.Runtime.Value.Structure
-import Thin
 
 instance Thinning Value where
   thin :: as <= bs -> Value as -> Value bs

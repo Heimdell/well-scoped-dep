@@ -13,10 +13,10 @@ module Phase.Runtime.Substitution
     Substitutes (subst)
   ) where
 
-import Vec
+import Data.Vec
+import Data.Nat
+import Data.Thin
 import Phase.Runtime.Value.Structure
-import Nat
-import Thin
 import Phase.Runtime.Value.Thinning ()
 
 {- |
