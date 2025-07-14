@@ -5,11 +5,11 @@
   Приведение выражения к нормальной форме.
 -}
 
-module Eval (eval) where
+module Pass.Eval (eval) where
 
 import Prelude hiding (fst, snd, uncurry)
 
-import Runtime
+import Phase.Runtime
 import Nat
 import Vec
 import Phase.Scoped

@@ -2,11 +2,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Runtime.Value.Pretty where
+module Phase.Runtime.Value.Pretty where
 
 import Prelude hiding (fst, snd)
 
-import Runtime.Value.Structure
+import Phase.Runtime.Value.Structure
 
 import Pretty
 import Vec

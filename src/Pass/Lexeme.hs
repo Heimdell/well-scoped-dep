@@ -1,6 +1,6 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE LambdaCase #-}
-module Lexeme where
+module Pass.Lexeme where
 
 import Data.Char
 

@@ -4,11 +4,11 @@
 {- |
   Реализации разбавления для `Value` и `Neutral`.
 -}
-module Runtime.Value.Thinning () where
+module Phase.Runtime.Value.Thinning () where
 
 import Prelude hiding (fst, snd, uncurry)
 
-import Runtime.Value.Structure
+import Phase.Runtime.Value.Structure
 import Thin
 
 instance Thinning Value where

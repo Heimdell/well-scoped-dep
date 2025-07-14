@@ -1,15 +1,13 @@
-module Parser where
+module Pass.Parser where
 
 import Prelude hiding (pi, uncurry)
 
 import Phase.Raw
 import Parsing
 import Name
-import Lexeme
+import Pass.Lexeme
 import Data.String
 import Control.Applicative
-
-import Debug.Trace
 
 type P = Parser LexemeType Lexeme
 
@@ -25,7 +23,7 @@ instance (a ~ ()) => IsString (P a) where
     -- traceShowM ("match", str)
     match (KW str) \case
       Lexeme {payload = pld} | str == show pld -> Just ()
-      Lexeme {payload = pld}                   -> Nothing
+      _                                        -> Nothing
 
 eof :: P ()
 eof = match EOF \case

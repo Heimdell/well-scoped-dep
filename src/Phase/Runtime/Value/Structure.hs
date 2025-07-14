@@ -5,7 +5,7 @@
 {- |
   Нормальная форма NbE-вычислителя.
 -}
-module Runtime.Value.Structure
+module Phase.Runtime.Value.Structure
   ( -- * Типы
     Value (..)
   , Neutral (..)

@@ -12,27 +12,27 @@ build-type:     Simple
 
 library
   exposed-modules:
-      Eval
-      Lexeme
       Name
       Nat
-      Parser
       Parsing
+      Pass.Eval
+      Pass.Lexeme
+      Pass.Parser
       Phase.Raw
       Phase.Raw.Pretty
       Phase.Raw.Structure
+      Phase.Runtime
+      Phase.Runtime.Substitution
+      Phase.Runtime.Value
+      Phase.Runtime.Value.Pretty
+      Phase.Runtime.Value.Structure
+      Phase.Runtime.Value.Substitution
+      Phase.Runtime.Value.Thinning
       Phase.Scoped
       Phase.Scoped.Pretty
       Phase.Scoped.Structure
       Pos
       Pretty
-      Runtime
-      Runtime.Substitution
-      Runtime.Value
-      Runtime.Value.Pretty
-      Runtime.Value.Structure
-      Runtime.Value.Substitution
-      Runtime.Value.Thinning
       Thin
       Vec
   other-modules:

@@ -1,12 +1,12 @@
 
-import Parser
-
 import System.Environment
-import Lexeme
 import Parsing
 import Pretty
 import Control.Applicative
 import Data.Foldable
+
+import Pass.Lexeme
+import Pass.Parser
 
 main :: IO ()
 main = do

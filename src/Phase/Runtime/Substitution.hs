@@ -4,7 +4,7 @@
 {- |
   Подстановка.
 -}
-module Runtime.Substitution
+module Phase.Runtime.Substitution
   ( -- * Подстановка
     Subst
   , keep
@@ -14,10 +14,10 @@ module Runtime.Substitution
   ) where
 
 import Vec
-import Runtime.Value.Structure
+import Phase.Runtime.Value.Structure
 import Nat
 import Thin
-import Runtime.Value.Thinning ()
+import Phase.Runtime.Value.Thinning ()
 
 {- |
   Подстановка из контекста @from@ в контекст @to@ представляет себя по одному

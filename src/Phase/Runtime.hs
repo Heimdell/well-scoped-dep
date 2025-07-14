@@ -1,4 +1,4 @@
-module Runtime
+module Phase.Runtime
   ( Value (..)
   , Neutral (..)
   , transport
@@ -12,10 +12,10 @@ module Runtime
 
 import Prelude hiding (uncurry)
 
-import Runtime.Value (Value (..), Neutral(..))
-import Runtime.Value.Thinning ()
-import Runtime.Value.Substitution (transport, apply, uncurry)
-import Runtime.Substitution
+import Phase.Runtime.Value (Value (..), Neutral(..))
+import Phase.Runtime.Value.Thinning ()
+import Phase.Runtime.Value.Substitution (transport, apply, uncurry)
+import Phase.Runtime.Substitution
   ( Subst
     , keep
     , extend

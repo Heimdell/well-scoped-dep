@@ -4,7 +4,7 @@
 {- |
   Реализации подстановки для `Value` и `Neutral`.
 -}
-module Runtime.Value.Substitution
+module Phase.Runtime.Value.Substitution
   ( -- * Элиминаторы
     transport
   , apply
@@ -16,8 +16,8 @@ import Prelude hiding (fst, snd, uncurry)
 import Nat
 import Vec
 
-import Runtime.Value.Structure
-import Runtime.Substitution
+import Phase.Runtime.Value.Structure
+import Phase.Runtime.Substitution
 import Name
 
 instance Substitutes Value where
