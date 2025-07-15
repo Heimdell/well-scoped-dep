@@ -19,7 +19,7 @@ import Phase.Scoped
 -}
 eval :: KnownNat n => Expr n -> Value n
 eval = \case
-  ExprVar var -> ValueNeutral (NeutralVar var)
+  ExprVar var             -> ValueNeutral (NeutralVar var)
 
   ExprU                   -> ValueU
   ExprPi      n arg res   -> ValuePi      n (eval arg) (eval res)
@@ -33,9 +33,9 @@ eval = \case
   ExprUncurry fst snd p k   -> uncurry    fst snd (eval p) (eval k)
   ExprTransp  a x y p px eq -> transport (eval a) (eval x) (eval y) (eval p) (eval px) (eval eq)
 
-  ExprLetRec  decls rest -> do
+  ExprLetRec  _names _tys vals rest -> do
     let
-      decls' = fmap (\(_name, _ty, val) -> subst sub (eval val)) decls
-      sub = decls' +++ keep
+      decls' = fmap (subst sub . eval) vals
+      sub    = decls' +++ keep
 
     subst sub (eval rest)

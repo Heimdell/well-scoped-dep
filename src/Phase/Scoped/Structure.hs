@@ -50,7 +50,7 @@ data Expr (n :: Nat)
     --   @Π[ argName : argTy ] resTy@
     ExprPi
       { argName :: Name
-      , argTy   :: Expr n
+      , argTy   :: Expr    n
       , resTy   :: Expr (S n)
       }
 
@@ -58,7 +58,7 @@ data Expr (n :: Nat)
     --   @Σ[ fstName : fstTy ] sndTy@
     ExprSigma
       { fstName :: Name
-      , fstTy   :: Expr n
+      , fstTy   :: Expr    n
       , sndTy   :: Expr (S n)
       }
 
@@ -71,7 +71,7 @@ data Expr (n :: Nat)
     --   @\argName -> body@
     ExprLam
       { argName :: Name
-      , body   :: Expr (S n)
+      , body    :: Expr (S n)
       }
 
   | -- | Завиcимая пара
@@ -85,12 +85,18 @@ data Expr (n :: Nat)
 
   | -- | Элиминатор функции
     --   @f x@
-    ExprApp     { f, x :: Expr n }
+    ExprApp { f, x :: Expr n }
 
   | -- | Элиминатор пары
     --   @let fstName, sndName = pair in consume@
-    ExprUncurry { fstName, sndName :: Name, pair :: Expr n, consume :: Expr (S (S n)) }
-  | ExprTransp  { a, x, y, p, px, eq :: Expr n }
+    ExprUncurry
+      { fstName, sndName :: Name
+      , pair             :: Expr       n
+      , consume          :: Expr (S (S n))
+      }
+
+  | ExprTransp
+      { a, x, y, p, px, eq :: Expr n }
 
   |  -- | Взаимно-рекурсивные объявления
      --   > let rec
@@ -98,8 +104,12 @@ data Expr (n :: Nat)
      --   > rest
      --   >
      forall d
-  .  KnownNat (d + n)
+  .  ( KnownNat (d + n)
+     , KnownNat  d
+     )
   => ExprLetRec
-    { decls :: Vec d (Name, Expr n, Expr (d + n))
-    , rest  :: Expr (d + n)
-    }
+      { declNames :: Vec d  Name
+      , declTys   :: Vec d (Expr      n)
+      , declVals  :: Vec d (Expr (d + n))
+      , rest      ::        Expr (d + n)
+      }

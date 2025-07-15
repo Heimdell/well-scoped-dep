@@ -7,6 +7,7 @@
 
   Т.е., контекст - это количество связанных переменных в терме.
 -}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 module Data.Thin
   ( -- * Типы
     type (<=) (..)
@@ -14,6 +15,8 @@ module Data.Thin
   , -- * Смарт-конструкторы
     none
   , every
+  , weaken
+  , splitVar
   , -- * Композиция
     o
   , -- * Функтор
@@ -35,8 +38,15 @@ import Data.Nat
 -}
 data (<=) n m where
   Empty ::           O   <= O    -- ^ Пустой контекст разбавляется себя
-  Drop  :: n <= m -> n   <= S m  -- ^ Добавление переменной
+  Drop  :: n <= m ->   n <= S m  -- ^ Добавление переменной
   Keep  :: n <= m -> S n <= S m  -- ^ Перенос переменной
+
+instance Eq (n <= m) where
+  a == b = case (a, b) of
+    (Empty,  Empty)  -> True
+    (Drop n, Drop m) -> n == m
+    (Keep n, Keep m) -> n == m
+    _                -> False
 
 {- |
   Композиция разбавлений.
@@ -72,6 +82,15 @@ every = case natS @n of
   NatO -> Empty
   NatS -> Keep every
 
+weaken ::
+     forall d n m
+  .  KnownNat d
+  => n <=      m
+  -> n <= (d + m)
+weaken th = case natS @d of
+  NatO     -> th
+  NatS @d1 -> Drop (weaken @d1 th)
+
 {- |
   "Разбавляемость" конструкции @p@.
 
@@ -80,3 +99,16 @@ every = case natS @n of
 -}
 class Thinning p where
   thin :: as <= bs -> p as -> p bs
+
+splitVar ::
+     forall d n
+  .  KnownNat d
+  => Below        (d +       n)
+  -> Either (Below d) (Below n)
+splitVar var = case natS @d of
+  NatO -> pure var
+  NatS @d1 -> case var of
+    Keep _   -> Left (Keep none)
+    Drop var' -> case splitVar @d1 @n var' of
+      Left  used -> Left (Drop used)
+      Right rest -> Right rest

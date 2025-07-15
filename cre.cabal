@@ -14,12 +14,13 @@ library
   exposed-modules:
       Data.Name
       Data.Nat
-      Data.Pos
       Data.Thin
       Data.Vec
       Pass.Eval
       Pass.Lexeme
       Pass.Parser
+      Pass.Scoping
+      Pass.Typing
       Phase.Raw
       Phase.Raw.Pretty
       Phase.Raw.Structure
@@ -34,6 +35,7 @@ library
       Phase.Scoped.Pretty
       Phase.Scoped.Structure
       Text.Parsing
+      Text.Pos
       Text.Pretty
   other-modules:
       Paths_cre

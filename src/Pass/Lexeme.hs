@@ -5,7 +5,7 @@ module Pass.Lexeme where
 import Data.Char
 
 import Text.Pretty
-import Data.Pos
+import Text.Pos
 
 data LexemeType
   = BigName   String
@@ -84,5 +84,7 @@ isPunct    c = c `elem` ("[]{}(),%;." :: String)
 setKW :: String -> [Lexeme] -> [Lexeme]
 setKW kws = map \case
   Lexeme {pos, payload = SmallName name}
+    | name `elem` words kws -> Lexeme {pos, payload = KW name}
+  Lexeme {pos, payload = BigName name}
     | name `elem` words kws -> Lexeme {pos, payload = KW name}
   other -> other

@@ -31,8 +31,9 @@ data Value (n :: Nat)
   | ValueEq      { x, y :: Value n }
 
   | ValueLam     { argName :: Name, body :: Value (S n) }
-  | ValuePair    { fst, snd :: Value n }
+  | ValuePair    { fst, snd :: Value n } -- a , b
   | ValueRefl
+  deriving stock (Eq)
 
 {- |
   "Застрявшее" значение.
@@ -45,3 +46,4 @@ data Neutral (n :: Nat)
   | NeutralApp     { f :: Neutral n, x :: Value n }
   | NeutralUncurry { fstName, sndName :: Name, pair :: Neutral n, consume :: Value (S (S n)) }
   | NeutralTransp  { a, x, y, p, px :: Value n, eq :: Neutral n }
+  deriving stock (Eq)

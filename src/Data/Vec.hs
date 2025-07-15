@@ -8,7 +8,12 @@ module Data.Vec
     index
   , -- * Конкатенация
     (+++)
+
+  , zip
+  , unzip
   ) where
+
+import Prelude hiding (zip, unzip)
 
 import Data.Nat
 import Data.Thin
@@ -47,3 +52,18 @@ instance Functor (Vec n) where
 instance Foldable (Vec n) where
   foldr _ z Nil = z
   foldr f z (x :> xs) = f x (foldr f z xs)
+
+instance Traversable (Vec n) where
+  traverse f = \case
+    Nil     -> pure Nil
+    x :> xs -> (:>) <$> f x <*> traverse f xs
+
+zip :: Vec n a -> Vec n b -> Vec n (a, b)
+zip (a :> as) (b :> bs) = (a, b) :> zip as bs
+zip  Nil       Nil      = Nil
+
+unzip :: Vec n (a, b) -> (Vec n a, Vec n b)
+unzip  Nil            = (Nil, Nil)
+unzip ((a, b) :> ab) = (a :> as, b :> bs)
+  where
+    (as, bs) = unzip ab

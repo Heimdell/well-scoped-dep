@@ -1,12 +1,15 @@
 
-import Control.Applicative
 import Data.Foldable
+import Data.Vec
 import System.Environment
 import Text.Parsing
 import Text.Pretty
 
 import Pass.Lexeme
 import Pass.Parser
+import Pass.Scoping as Scoping
+import Pass.Typing as Typing
+import Phase.Scoped ()
 
 main :: IO ()
 main = do
@@ -21,4 +24,15 @@ main = do
       print (pPrint l.pos)
 
     Right a -> do
-      print (pPrint a)
+      case Scoping.check Nil a of
+        Left err -> print (pPrint err)
+        Right a' -> do
+          case Typing.infer Nil Nil a' of
+            Left (err, scope) -> do
+              print (pPrint err)
+              print scope
+
+            Right a'' -> do
+              print (pic Nil a')
+              putStrLn ":"
+              print (pic Nil a'')

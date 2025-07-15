@@ -11,8 +11,9 @@ import Text.PrettyPrint.HughesPJClass
 
 import Data.Vec
 import Data.Name
-import Data.Pos
 import Data.Maybe
+import Text.Pos
+import Data.Thin
 
 class PrettyInContext p where
   pic :: Vec n Name -> p n -> Doc
@@ -56,3 +57,8 @@ instance Pretty ShortPos where
 instance Pretty LocatedName where
   pPrint LocatedName {name} =
     pPrint name <+> "@" <+> pPrint (ShortPos name.pos)
+
+instance Pretty (Below n) where
+  pPrint = \case
+    Keep _   -> "1"
+    Drop var -> "0" <.> pPrint var
