@@ -27,17 +27,21 @@
 -}
 module Phase.Scoped.Structure
   ( Expr (..)
+  , Expr_ (..)
   ) where
 
 import Data.Nat
 import Data.Thin
 import Data.Vec
 import Data.Name
+import Text.Pos
+
+data Expr n = (:@) { pos :: Pos, expr :: Expr_ n }
 
 {- |
   Программа на моделируемом языке.
 -}
-data Expr (n :: Nat)
+data Expr_ (n :: Nat)
   = -- | Переменная
     ExprVar
       { var :: Below n }

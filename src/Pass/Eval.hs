@@ -13,12 +13,13 @@ import Phase.Runtime
 import Data.Nat
 import Data.Vec
 import Phase.Scoped
+import Text.Pretty (pPrint)
 
 {- |
   Переаод выражения в нормальную форму.
 -}
 eval :: NatS n -> Expr n -> Value n
-eval bs = \case
+eval bs (_ :@ expr) = case expr of
   ExprVar var             -> ValueNeutral (NeutralVar var)
 
   ExprU                   -> ValueU
@@ -38,6 +39,8 @@ eval bs = \case
     (eval bs p)
     (eval bs px)
     (eval bs eq)
+
+  ExprHole name -> error $ "Typed hole remains in `eval`: ?" <> show (pPrint name)
 
   ExprLetRec d _names _tys vals rest -> do
     let

@@ -1,21 +1,15 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoFieldSelectors #-}
-{-# LANGUAGE DuplicateRecordFields #-}
-
 module Phase.Scoped.Pretty () where
 
 import Prelude hiding (fst, snd, zip)
 
 import Data.Vec
 import Data.Foldable
-import Data.Functor ((<&>))
 import Text.Pretty
 
 import Phase.Scoped.Structure
 
 instance PrettyInContext Expr where
-  pic names = \case
+  pic names (_ :@ expr)= case expr of
     ExprVar var -> pPrint (index var names)
 
     ExprU -> "Type"

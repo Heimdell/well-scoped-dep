@@ -1,4 +1,4 @@
-module Phase.Raw (Expr (..)) where
+module Phase.Raw (Expr (..), Expr_ (..)) where
 
-import Phase.Raw.Structure (Expr (..))
+import Phase.Raw.Structure (Expr (..), Expr_ (..))
 import Phase.Raw.Pretty ()

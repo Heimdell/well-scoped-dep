@@ -52,7 +52,7 @@ findNot name = \case
     | otherwise -> findNot name env'
 
 check :: Vec n Name -> In.Expr -> Either Err (Out.Expr n)
-check env = \case
+check env (pos In.:@ expr) = (pos Out.:@) <$> case expr of
   In.ExprVar name -> Out.ExprVar <$> find name env
 
   In.ExprU -> pure Out.ExprU

@@ -2,11 +2,14 @@
 module Phase.Raw.Structure where
 
 import Data.Name
+import Text.Pos
+
+data Expr = (:@) { pos :: Pos, expr :: Expr_ }
 
 {- |
   Программа на моделируемом языке.
 -}
-data Expr
+data Expr_
   = -- | Переменная
     ExprVar
       { var :: Name }

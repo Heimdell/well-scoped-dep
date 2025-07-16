@@ -30,8 +30,9 @@ main = do
         Left err -> print (pPrint err)
         Right a' -> do
           case Typing.infer Nil Nil a' of
-            Left (err, scope) -> do
+            Left (err, scope, pos) -> do
               print (pPrint err)
+              print (pPrint pos)
               print (vcat ["Scope:", nest 2scope])
 
             Right a'' -> do

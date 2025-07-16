@@ -9,6 +9,7 @@ import Data.String
 import Text.Parsing
 
 import Phase.Raw
+import Text.Pos
 
 type P = Parser LexemeType Lexeme
 
@@ -31,63 +32,71 @@ eof = match EOF \case
   Lexeme {payload = EOF} -> Just ()
   _                      -> Nothing
 
+ctor :: P (Pos -> a) -> P a
+ctor mc = mc <*> project (.pos)
+
 term, expr :: P Expr
-term = asum
-  [       ExprVar   <$> name
+term = do
+  p <- project (.pos)
+  asum
+    [ (p :@) . ExprVar <$> name
+    ,  p :@    ExprU   <$ "Type"
 
-  ,       ExprU     <$ "Type"
+    , pi
+    , sigma
 
-  ,       pi
-  ,       lam
-       -- app
+    ,      lam
+    ,      pair
+    , p :@ ExprRefl  <$ "refl"
 
-  ,       sigma
-  , foldl ExprPair  <$ "(" <*> expr <*> many ("," *> expr) <* ")"
-  ,       uncurry
+    , uncurry
 
-       -- ew
-  ,       ExprRefl  <$ "refl"
-  ,       transport
+    , transport
 
-  ,       ExprHole <$ "?" <*> name
+    , (p :@) . ExprHole <$ "?" <*> name
 
-  ,       letrec
-  ]
+    , letrec
+    ]
 
-expr = foldl ExprEq <$> app <*> many ("==" *> app)
+position :: P Pos
+position = project (.pos)
 
-app :: P Expr
-app = foldl1 ExprApp <$> some term
+pair, app :: P Expr
+pair = foldl (\l (p, r) -> p :@ ExprPair l r) <$ "(" <*> expr <*> many ((,) <$> position <* ","  <*> expr) <* ")"
+expr = foldl (\x (p, y) -> p :@ ExprEq   x y)        <$> app  <*> many ((,) <$> position <* "==" <*> app)
+app  = foldl (\f (p, x) -> p :@ ExprApp  f x)        <$> term <*> many ((,) <$> position         <*> term)
 
 pi :: P Expr
-pi = collect <$ "[" <*> arg `sepBy1` "," <* "]" <* "->" <*> expr
+pi = collect <$ "[" <*> ((,) <$> position <*> arg) `sepBy1` "," <* "]" <* "->" <*> expr
   where
-    collect = flip (foldr \(arg', ty) res -> ExprPi arg' ty res)
+    collect = flip (foldr \(pos, (arg', ty)) res -> pos :@ ExprPi arg' ty res)
 
     arg :: P (Name, Expr)
     arg = (,) <$> name <* ":" <*> expr
 
 sigma :: P Expr
 sigma = collect <$
-  "{" <*> field `sepBy1` "," <* "|" <*> expr <* "}"
+  "{" <*> ((,) <$> position <*> field) `sepBy1` "," <* "|" <*> expr <* "}"
   where
-    collect = flip (foldr \(arg', ty) res -> ExprSigma arg' ty res)
+    collect = flip (foldr \(pos, (arg', ty)) res -> pos :@ ExprSigma arg' ty res)
 
     field :: P (Name, Expr)
     field = (,) <$> name <* ":" <*> expr
 
 lam :: P Expr
-lam = flip (foldr ExprLam)
-  <$ "\\" <*> name `sepBy1` "," <* "->" <*> expr
+lam = flip (foldr (\(p, arg) body -> p :@ ExprLam arg body))
+  <$ "\\" <*> ((,) <$> position <*> name) `sepBy1` "," <* "->" <*> expr
 
 uncurry :: P Expr
-uncurry = ExprUncurry
-  <$ "let" <*> name <* "," <*> name <* "=" <*> expr
+uncurry = (\p a b c d -> p :@ ExprUncurry a b c d )
+  <$> position
+  <* "let" <*> name <* "," <*> name <* "=" <*> expr
   <* "in" <*> expr
 
 transport :: P Expr
-transport = ExprTransp
-  <$ "transport" <* "("
+transport = (\p a b c d e f -> p :@ ExprTransp a b c d e f)
+  <$> position
+  <* "transport" <* "("
     <*> expr <* ","
     <*> expr <* ","
     <*> expr <* ","
@@ -97,10 +106,10 @@ transport = ExprTransp
   <* ")"
 
 letrec :: P Expr
-letrec = ExprLetRec
-  <$ "let-rec"
-    <*> (decl `sepBy` ";")
-  <* "in" <*> expr
+letrec = (\p decls k -> p :@ ExprLetRec decls k)
+  <$> position
+  <*  "let-rec" <*> (decl `sepBy` ";")
+  <*  "in"      <*> expr
 
 decl :: P (Name, Expr, Expr)
 decl = (,,) <$> name <* ":" <*> expr <* "=" <*> expr

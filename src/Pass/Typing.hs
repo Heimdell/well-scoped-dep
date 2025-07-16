@@ -56,11 +56,11 @@ instance Pretty ErrMsg where
         ]
     Hole name ty -> "Typed hole: ?" <.> pPrint name <+> ":" \\ ty
 
-type Err = (ErrMsg, Doc)
+type Err = (ErrMsg, Doc, Pos)
 
-failWithEnv :: Env n -> Ns n -> ErrMsg -> Either Err a
-failWithEnv env ns msg = do
-  throwError (msg, dumpEnv env ns)
+failWithEnv :: Pos -> Env n -> Ns n -> ErrMsg -> Either Err a
+failWithEnv pos env ns msg = do
+  throwError (msg, dumpEnv env ns, pos)
 
 dumpEnv :: Env n -> Ns n -> Doc
 dumpEnv env ns
@@ -69,13 +69,13 @@ dumpEnv env ns
   $ toList (zip ns env)
 
 check :: forall n. Env n -> Ns n -> Value n -> Expr n -> Either Err ()
-check env ns ty expr = do
+check env ns ty (pos :@ expr) = do
   let n = len env
   case expr of
     ExprU -> case ty of
       ValueU -> pure ()
       other  -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) "Type"
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) "Type"
 
     ExprPi arg argTy res -> case ty of
       ValueU -> do
@@ -95,7 +95,7 @@ check env ns ty expr = do
                         ValueU
                         res
       other -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
     ExprEq x y -> case ty of
       ValueU -> do
@@ -103,14 +103,14 @@ check env ns ty expr = do
         check env ns a y
 
       other -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
     ExprLam arg body -> case ty of
       ValuePi _ argTy res -> do
         check (s' n (argTy :> env)) (arg :> ns) res body
 
       other -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
     ExprPair fst snd -> case ty of
       ValueSigma _ fstTy sndTy -> do
@@ -118,15 +118,15 @@ check env ns ty expr = do
         check env ns (subst n (fstTy :> keep n) sndTy) snd
 
       other -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
     ExprRefl -> case ty of
       ValueEq _ _ -> pure ()
       other -> do
-        failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+        failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
     ExprHole name -> do
-      failWithEnv env ns $ Hole name (pic ns ty)
+      failWithEnv pos env ns $ Hole name (pic ns ty)
 
     ExprLetRec d dNs tys vals k -> do
       -- get declaration names (dNs) and types (dEnv)
@@ -146,11 +146,11 @@ check env ns ty expr = do
                   k
 
     other -> do
-      ty' <- infer env ns other
-      unify env ns ty ty'
+      ty' <- infer env ns (pos :@ other)
+      unify pos env ns ty ty'
 
 infer :: forall n. Env n -> Ns n -> Expr n -> Either Err (Value n)
-infer env ns expr = do
+infer env ns (pos :@ expr) = do
   let n = len env
   case expr of
     ExprVar ptr -> pure (index ptr env)
@@ -162,7 +162,7 @@ infer env ns expr = do
           pure (subst n (eval n x :> keep n) res)
 
         other ->
-          failWithEnv env ns $ NotAPi (pic ns other)
+          failWithEnv pos env ns $ NotAPi (pic ns other)
 
     ExprUncurry fst snd pair uncurry' -> do
       ty <- infer env ns pair
@@ -178,7 +178,7 @@ infer env ns expr = do
           case independent (NatS (NatS NatO)) n ty' of
             Right ty'' -> pure ty''
             Left  var  ->
-              failWithEnv env ns
+              failWithEnv pos env ns
                 $ SkolemEscaped (index var (snd.pos :> fst.pos :> Nil))
                   $ pic (snd :> fst :> ns) ty'
 
@@ -210,7 +210,7 @@ infer env ns expr = do
       case independent d n ty' of
         Right rest -> pure rest
         Left  used ->
-          failWithEnv env ns
+          failWithEnv pos env ns
             $ SkolemEscaped (index used ((.pos) <$> dNs))
             $ pPrint $ index used dNs
 
@@ -231,10 +231,10 @@ s = thin . Drop . every
 s' :: (Functor f) => NatS n -> f (Value n) -> f (Value (S n))
 s' = fmap . s
 
-unify :: Env n -> Ns n -> Value n -> Value n -> Either Err ()
-unify env ns l r = do
+unify :: Pos -> Env n -> Ns n -> Value n -> Value n -> Either Err ()
+unify pos env ns l r = do
   unless (l == r) do
-    failWithEnv env ns $ Mismatch (pic ns l) (pic ns r)
+    failWithEnv pos env ns $ Mismatch (pic ns l) (pic ns r)
 
 independent :: forall d' n' . NatS d' -> NatS n' -> Value (d' + n') -> Either (Below d') (Value n')
 independent = go

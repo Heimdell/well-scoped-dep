@@ -1,5 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Phase.Raw.Pretty () where
 
@@ -10,7 +8,7 @@ import Text.Pretty
 import Phase.Raw.Structure
 
 instance Pretty Expr where
-  pPrint = \case
+  pPrint (_ :@ expr) = case expr of
     ExprVar var -> pPrint var
 
     ExprU -> "Type"
