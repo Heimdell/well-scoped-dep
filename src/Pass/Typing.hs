@@ -20,7 +20,6 @@ import Pass.Eval
 import Data.Foldable (toList, for_)
 import Control.Monad (unless)
 import Data.Traversable (for)
-import Unsafe.Coerce (unsafeCoerce)
 
 type Env n = Vec n (Value n)
 type Ns  n = Vec n Name
@@ -32,6 +31,7 @@ data ErrMsg
   | Mismatch Doc Doc
   | SkolemEscaped Pos Doc
   | IsNotOfType Doc Doc
+  | Hole Name Doc
 
 instance Pretty ErrMsg where
   pPrint = \case
@@ -54,6 +54,7 @@ instance Pretty ErrMsg where
         , "is not of type"
         , nest 2 ty
         ]
+    Hole name ty -> "Typed hole: ?" <.> pPrint name <+> ":" \\ ty
 
 type Err = (ErrMsg, Doc)
 
@@ -123,6 +124,9 @@ check env ns ty expr = do
       ValueEq _ _ -> pure ()
       other -> do
         failWithEnv env ns $ IsNotOfType (pic ns other) (pic ns expr)
+
+    ExprHole name -> do
+      failWithEnv env ns $ Hole name (pic ns ty)
 
     ExprLetRec d dNs tys vals k -> do
       -- get declaration names (dNs) and types (dEnv)

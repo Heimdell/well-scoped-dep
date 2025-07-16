@@ -107,6 +107,8 @@ check env = \case
       <*> check env px
       <*> check env eq
 
+  In.ExprHole name -> pure (Out.ExprHole name)
+
   In.ExprLetRec decls k -> do
     for_ decls \(n, _, _) -> do
       findNot n env

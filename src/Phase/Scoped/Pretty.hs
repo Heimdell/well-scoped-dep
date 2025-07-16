@@ -50,6 +50,8 @@ instance PrettyInContext Expr where
     ExprTransp {a, x, y, p, px, eq} ->
       "transp" <.> parens (list [pic names a, pic names x, pic names y, pic names p, pic names px, pic names eq])
 
+    ExprHole name -> "?" <+> pPrint name
+
     ExprLetRec {declNames, declTys, declVals, rest} ->
       ("let" <+> "rec" \\
         block (toList (picDecl <$> zip declNames (zip declTys declVals))))

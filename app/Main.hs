@@ -32,7 +32,7 @@ main = do
           case Typing.infer Nil Nil a' of
             Left (err, scope) -> do
               print (pPrint err)
-              print scope
+              print (vcat ["Scope:", nest 2scope])
 
             Right a'' -> do
               print (pic Nil (eval NatO a'))

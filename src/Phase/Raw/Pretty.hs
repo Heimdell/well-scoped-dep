@@ -45,6 +45,8 @@ instance Pretty Expr where
     ExprTransp {a, x, y, p, px, eq} ->
       "transp" <.> parens (list [pPrint a, pPrint x, pPrint y, pPrint p, pPrint px, pPrint eq])
 
+    ExprHole name -> "?" <+> pPrint name
+
     ExprLetRec {decls, rest} ->
       ("let" <+> "rec" \\
         block (picDecl <$> decls))

@@ -61,6 +61,8 @@ data Expr
     ExprUncurry { fstName, sndName :: Name, pair :: Expr, consume :: Expr }
   | ExprTransp  { a, x, y, p, px, eq :: Expr }
 
+  | ExprHole Name
+
   |  -- | Взаимно-рекурсивные объявления
      --   > let rec
      --   >   [decl : ty = val]

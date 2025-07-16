@@ -98,6 +98,8 @@ data Expr (n :: Nat)
   | ExprTransp
       { a, x, y, p, px, eq :: Expr n }
 
+  | ExprHole Name
+
   |  -- | Взаимно-рекурсивные объявления
      --   > let rec
      --   >   [decl : ty = val]

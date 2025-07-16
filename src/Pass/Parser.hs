@@ -49,6 +49,8 @@ term = asum
   ,       ExprRefl  <$ "refl"
   ,       transport
 
+  ,       ExprHole <$ "?" <*> name
+
   ,       letrec
   ]
 

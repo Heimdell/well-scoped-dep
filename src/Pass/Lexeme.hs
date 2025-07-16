@@ -79,7 +79,7 @@ lexing pos (c : str)
 isNameBody, isOperator, isPunct :: Char -> Bool
 isNameBody c = isAsciiUpper c || isAsciiLower c || isDigit c || c == '-' || c == '\''
 isOperator c = c `elem` ("+-:*&|~<=>/" :: String)
-isPunct    c = c `elem` ("[]{}(),%;." :: String)
+isPunct    c = c `elem` ("[]{}(),%;.?" :: String)
 
 setKW :: String -> [Lexeme] -> [Lexeme]
 setKW kws = map \case
