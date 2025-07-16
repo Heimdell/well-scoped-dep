@@ -16,6 +16,7 @@ module Data.Thin
     none
   , every
   , weaken
+  , weakenr
   , splitVar
   , -- * Композиция
     o
@@ -69,27 +70,36 @@ type Below m = S O <= m
 {- |
   Пустая выборка из контекста, все нули.
 -}
-none :: forall n. KnownNat n => O <= n
-none = case natS @n of
-  NatO -> Empty
-  NatS -> Drop none
+none :: NatS n -> O <= n
+none n = case n of
+  NatO    -> Empty
+  NatS n1 -> Drop (none n1)
 
 {- |
   Полная выборка из контекста, все единицы.
 -}
-every :: forall n. KnownNat n => n <= n
-every = case natS @n of
-  NatO -> Empty
-  NatS -> Keep every
+every :: NatS n -> n <= n
+every n = case n of
+  NatO    -> Empty
+  NatS n1 -> Keep (every n1)
 
 weaken ::
-     forall d n m
-  .  KnownNat d
-  => n <=      m
+     NatS d
+  -> n <=      m
   -> n <= (d + m)
-weaken th = case natS @d of
-  NatO     -> th
-  NatS @d1 -> Drop (weaken @d1 th)
+weaken d th = case d of
+  NatO    -> th
+  NatS d1 -> Drop (weaken d1 th)
+
+weakenr ::
+     forall d n m
+  .  NatS d
+  -> n <=  m
+  -> n <= (m + d)
+weakenr d = \case
+  Keep th -> Keep (weakenr d th)
+  Drop th -> Drop (weakenr d th)
+  Empty   -> none d
 
 {- |
   "Разбавляемость" конструкции @p@.
@@ -102,13 +112,13 @@ class Thinning p where
 
 splitVar ::
      forall d n
-  .  KnownNat d
-  => Below        (d +       n)
+  .  NatS d
+  -> Below        (d +       n)
   -> Either (Below d) (Below n)
-splitVar var = case natS @d of
+splitVar d var = case d of
   NatO -> pure var
-  NatS @d1 -> case var of
-    Keep _   -> Left (Keep none)
-    Drop var' -> case splitVar @d1 @n var' of
+  NatS d1 -> case var of
+    Keep _   -> Left (Keep (none d1))
+    Drop var' -> case splitVar d1 var' of
       Left  used -> Left (Drop used)
       Right rest -> Right rest

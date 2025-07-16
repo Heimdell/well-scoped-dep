@@ -186,3 +186,51 @@ list←maybe = maybe (_∷ []) []
 
 join : ⦃ _ : Monad M ⦄ → M (M A) → M A
 join mma = mma >>= id
+
+-- data Rec (Q : Set) (R : Q → Set) (A : Set) : Set where
+--   !!   : A → Rec Q R A
+--   _??_ : (q : Q) (r : R q → Rec Q R A) → Rec Q R A
+
+-- elim-rec : ∀{Q R} → (A → B) → ((r : Q) → (R r → B) → B) → Rec Q R A → B
+-- elim-rec un-!! un-?? (!! x) = un-!! x
+-- elim-rec un-!! un-?? (q ?? r) = un-?? q (λ t → elim-rec un-!! un-?? (r t))
+
+-- _>>-_ : ∀{Q R} → Rec Q R A → (A → Rec Q R B) → Rec Q R B
+-- ma >>- k = elim-rec k _??_ ma
+
+-- instance
+--   Functor-Rec : ∀{Q R} → Functor (Rec Q R)
+--   Functor-Rec .map f (  !! x) =   !! (f x)
+--   Functor-Rec .map f (q ?? r) = q ?? (map f ∘ r)
+
+--   Applicative-Rec : ∀{Q R} → Applicative (Rec Q R)
+--   Applicative-Rec ._<*>_ f x = f >>- λ f → x >>- λ x → pure (f x)
+--   Applicative-Rec .pure    x = !! x
+
+--   Monad-Rec : ∀{Q R} → Monad (Rec Q R)
+--   Monad-Rec ._>>=_ = _>>-_
+
+-- Π′ : (S : Set) (T : S → Set) → Set
+-- Π′ S T = (s : S) → Rec S T (T s)
+
+-- call : ∀{Q R} → Π′ Q R
+-- call q = q ?? !!
+
+-- morph : ∀{S T} →
+--   ⦃ _ : Monad M ⦄
+--   ( h : (s : S) → M (T s) )
+--       → ∀{A}
+--       → Rec S T A
+--       → M A
+-- morph h = elim-rec pure (_>>=_ ∘ h)
+
+-- open import Data.Bool
+
+-- halting : ∀{S} → (S → Bool) → (S → S) → Π′ S λ _ → S
+-- halting stop step start with stop start
+-- ... | false = !!    start
+-- ... | true  = call (step start)
+
+data Later (A : Set) : Set where
+  now   :       A → Later A
+  later : Later A → Later A

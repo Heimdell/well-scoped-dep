@@ -17,25 +17,31 @@ import Phase.Scoped
 {- |
   Переаод выражения в нормальную форму.
 -}
-eval :: KnownNat n => Expr n -> Value n
-eval = \case
+eval :: NatS n -> Expr n -> Value n
+eval bs = \case
   ExprVar var             -> ValueNeutral (NeutralVar var)
 
   ExprU                   -> ValueU
-  ExprPi      n arg res   -> ValuePi      n (eval arg) (eval res)
-  ExprSigma   n fst snd   -> ValueSigma   n (eval fst) (eval snd)
-  ExprEq        x y       -> ValueEq      (eval x) (eval y)
-  ExprLam     n body      -> ValueLam     n (eval body)
-  ExprPair    fst snd     -> ValuePair    (eval fst) (eval snd)
+  ExprPi      n arg res   -> ValuePi      n (eval bs arg) (eval (NatS bs) res)
+  ExprSigma   n fst snd   -> ValueSigma   n (eval bs fst) (eval (NatS bs) snd)
+  ExprEq        x y       -> ValueEq      (eval bs x) (eval bs y)
+  ExprLam     n body      -> ValueLam     n (eval (NatS bs) body)
+  ExprPair    fst snd     -> ValuePair    (eval bs fst) (eval bs snd)
   ExprRefl                -> ValueRefl
 
-  ExprApp     f x           -> apply     (eval f) (eval x)
-  ExprUncurry fst snd p k   -> uncurry    fst snd (eval p) (eval k)
-  ExprTransp  a x y p px eq -> transport (eval a) (eval x) (eval y) (eval p) (eval px) (eval eq)
+  ExprApp     f x           -> apply     bs (eval bs f) (eval bs x)
+  ExprUncurry fst snd p k   -> uncurry   bs  fst snd (eval bs p) (eval (NatS (NatS bs)) k)
+  ExprTransp  a x y p px eq -> transport
+    (eval bs a)
+    (eval bs x)
+    (eval bs y)
+    (eval bs p)
+    (eval bs px)
+    (eval bs eq)
 
-  ExprLetRec  _names _tys vals rest -> do
+  ExprLetRec d _names _tys vals rest -> do
     let
-      decls' = fmap (subst sub . eval) vals
-      sub    = decls' +++ keep
+      decls' = fmap (subst bs sub . eval (add d bs)) vals
+      sub    = decls' +++ keep bs
 
-    subst sub (eval rest)
+    subst bs sub (eval (d `add` bs) rest)

@@ -14,8 +14,10 @@ module Data.Nat
   , -- * Пучок
     NatS (..)
 
-  , -- * Синглтон
-    KnownNat (natS)
+  , add
+
+  -- , -- * Синглтон
+  --   KnownNat (natS)
   ) where
 
 {- |
@@ -38,17 +40,22 @@ type family a + b where
   Пучок, отображающий числа с уровня типов на уровень значений.
 -}
 data NatS (n :: Nat) where
-  NatO ::               NatS  O
-  NatS :: KnownNat n => NatS (S n)
+  NatO ::           NatS  O
+  NatS :: NatS n -> NatS (S n)
 
-{- |
-  Синглтон числа.
--}
-class KnownNat (n :: Nat) where
-  natS :: NatS n
+add :: NatS d -> NatS n -> NatS (d + n)
+add = \case
+  NatO   -> id
+  NatS d -> NatS . add d
 
-instance KnownNat O where
-  natS = NatO
+-- {- |
+--   Синглтон числа.
+-- -}
+-- class KnownNat (n :: Nat) where
+--   natS :: NatS n
 
-instance KnownNat n => KnownNat (S n) where
-  natS = NatS
+-- instance KnownNat O where
+--   natS = NatO
+
+-- instance KnownNat n => KnownNat (S n) where
+--   natS = NatS

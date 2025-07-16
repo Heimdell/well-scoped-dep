@@ -28,24 +28,24 @@ type Subst from to = Vec from (Value to)
 {- |
   Расширить подстановку на один нейтральный элемент.
 -}
-extend :: KnownNat bs => Subst as bs -> Subst (S as) (S bs)
-extend sub
-  = ValueNeutral (NeutralVar (Keep none))
-  :> fmap (thin (Drop every)) sub
+extend :: NatS bs -> Subst as bs -> Subst (S as) (S bs)
+extend bs sub
+  = ValueNeutral (NeutralVar (Keep (none bs)))
+  :> fmap (thin (Drop (every bs))) sub
 
 {- |
   Юнит-подстановка.
 
   Не меняет объект, к которому применена.
 -}
-keep :: forall as. KnownNat as => Subst as as
-keep = case natS @as of
-  NatO -> Nil
-  NatS -> extend keep
+keep :: NatS as -> Subst as as
+keep = \case
+  NatO   -> Nil
+  NatS n -> extend n (keep n)
 
 {- |
   Подстановка позволяет отобразить структуру @p@ во входном контексте @as@
   в значение в выходном контексте @bs@.
 -}
 class Substitutes p where
-  subst :: KnownNat bs => Subst as bs -> p as -> Value bs
+  subst :: NatS bs -> Subst as bs -> p as -> Value bs

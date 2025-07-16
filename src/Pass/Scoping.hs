@@ -37,11 +37,11 @@ instance Pretty Err where
         , pPrint old
         ]
 
-find :: forall n. KnownNat n => Name -> Vec n Name -> Either Err (Below n)
-find name env = case (env, natS @n) of
-  (Nil,       _)  -> throwError (Undefined name.pos name)
-  (n :> env', NatS)
-    | n == name -> pure (Keep none)
+find :: forall n. Name -> Vec n Name -> Either Err (Below n)
+find name env = case env of
+  Nil -> throwError (Undefined name.pos name)
+  n :> env'
+    | n == name -> pure (Keep (none (len env')))
     | otherwise -> Drop <$> find name env'
 
 findNot :: Name -> Vec n Name -> Either Err ()
@@ -51,7 +51,7 @@ findNot name = \case
     | n == name -> throwError (Shadowing name.pos name n.pos)
     | otherwise -> findNot name env'
 
-check :: KnownNat n => Vec n Name -> In.Expr -> Either Err (Out.Expr n)
+check :: Vec n Name -> In.Expr -> Either Err (Out.Expr n)
 check env = \case
   In.ExprVar name -> Out.ExprVar <$> find name env
 
@@ -115,12 +115,11 @@ check env = \case
     case delta of
       Delta dEnv decls' -> do
         (tys, vals) <- unzip <$> for decls' (checkDecl dEnv env)
-        Out.ExprLetRec dEnv tys vals
+        Out.ExprLetRec (len dEnv) dEnv tys vals
           <$> check (dEnv +++ env) k
 
 checkDecl ::
-     (KnownNat n, KnownNat (d + n))
-  => Vec d Name
+     Vec d Name
   -> Vec n Name
   -> (Name, In.Expr, In.Expr)
   -> Either Err (Out.Expr n, Out.Expr (d + n))
@@ -130,7 +129,7 @@ checkDecl dEnv env (_, ty, val) = do
     <*> check (dEnv +++ env) val
 
 deltaEnv ::
-     KnownNat n => Vec n Name
+     Vec n Name
   -> [(Name, In.Expr, In.Expr)]
   -> Either Err (Delta n)
 deltaEnv env = \case
@@ -143,10 +142,7 @@ deltaEnv env = \case
 
 data Delta n
   = forall d
-  . ( KnownNat d
-    , KnownNat (d + n)
-    )
-  => Delta
+  . Delta
       { delta :: Vec d Name
       , decls :: Vec d (Name, In.Expr, In.Expr)
       }

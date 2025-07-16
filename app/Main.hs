@@ -1,6 +1,7 @@
 
 import Data.Foldable
 import Data.Vec
+import Data.Nat
 import System.Environment
 import Text.Parsing
 import Text.Pretty
@@ -9,6 +10,7 @@ import Pass.Lexeme
 import Pass.Parser
 import Pass.Scoping as Scoping
 import Pass.Typing as Typing
+import Pass.Eval
 import Phase.Scoped ()
 
 main :: IO ()
@@ -33,6 +35,6 @@ main = do
               print scope
 
             Right a'' -> do
-              print (pic Nil a')
+              print (pic Nil (eval NatO a'))
               putStrLn ":"
               print (pic Nil a'')

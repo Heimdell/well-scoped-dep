@@ -104,11 +104,9 @@ data Expr (n :: Nat)
      --   > rest
      --   >
      forall d
-  .  ( KnownNat (d + n)
-     , KnownNat  d
-     )
-  => ExprLetRec
-      { declNames :: Vec d  Name
+  .  ExprLetRec
+      { d         :: NatS d
+      , declNames :: Vec d  Name
       , declTys   :: Vec d (Expr      n)
       , declVals  :: Vec d (Expr (d + n))
       , rest      ::        Expr (d + n)

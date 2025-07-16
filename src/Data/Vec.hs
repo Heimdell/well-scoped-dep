@@ -11,6 +11,7 @@ module Data.Vec
 
   , zip
   , unzip
+  , len
   ) where
 
 import Prelude hiding (zip, unzip)
@@ -67,3 +68,8 @@ unzip  Nil            = (Nil, Nil)
 unzip ((a, b) :> ab) = (a :> as, b :> bs)
   where
     (as, bs) = unzip ab
+
+len :: Vec n a -> NatS n
+len = \case
+  Nil     -> NatO
+  _ :> xs -> NatS (len xs)
