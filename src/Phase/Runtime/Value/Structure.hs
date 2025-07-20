@@ -43,6 +43,7 @@ data Value (n :: Nat)
 -}
 data Neutral (n :: Nat)
   = NeutralVar     { var :: Below n }
+  | NeutralHole    { hole :: Name }
   | NeutralApp     { f :: Neutral n, x :: Value n }
   | NeutralUncurry { fstName, sndName :: Name, pair :: Neutral n, consume :: Value (S (S n)) }
   | NeutralTransp  { a, x, y, p, px :: Value n, eq :: Neutral n }

@@ -39,6 +39,7 @@ instance PrettyInContext Value where
 instance PrettyInContext Neutral where
   pic names = \case
     NeutralVar var -> pPrint (index var names)
+    NeutralHole name -> "?" <.> pPrint name
     NeutralApp {f, x} -> parens (pic names f <+> pic names x)
     NeutralUncurry {fstName, sndName, pair, consume} ->
       ("let" <+> pPrint fstName <.> "," <+> pPrint sndName <+> "=" \\ pic names pair)

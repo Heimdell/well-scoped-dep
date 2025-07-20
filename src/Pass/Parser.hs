@@ -53,7 +53,7 @@ term = do
 
     , transport
 
-    , (p :@) . ExprHole <$ "?" <*> name
+    , (p :@) . ExprHole False <$ "?" <*> name
 
     , letrec
     ]

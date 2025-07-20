@@ -7,6 +7,7 @@ module Pass.Typing where
 import Prelude hiding (zip, fst, snd, uncurry, unzip)
 
 import Control.Monad.Except
+import Control.Monad.Writer
 import Data.Vec
 import Data.Nat
 import Data.Name
@@ -58,7 +59,23 @@ instance Pretty ErrMsg where
 
 type Err = (ErrMsg, Doc, Pos)
 
-failWithEnv :: Pos -> Env n -> Ns n -> ErrMsg -> Either Err a
+data Warn
+  = TypedHole Name Pos (Maybe Doc) Doc
+
+instance Pretty Warn where
+  pPrint (TypedHole name pos mty ctx) =
+    vcat
+      [ "found hole ?" <.> pPrint name <+> case mty of
+          Nothing -> "in inferring postion"
+          Just ty -> "of type" \\ ty
+      , pPrint pos
+      , nest 2 ctx
+      , ""
+      ]
+
+type M = ExceptT Err (Writer [Warn])
+
+failWithEnv :: Pos -> Env n -> Ns n -> ErrMsg -> M a
 failWithEnv pos env ns msg = do
   throwError (msg, dumpEnv env ns, pos)
 
@@ -68,7 +85,7 @@ dumpEnv env ns
   $ map do \(n, v) -> pPrint n <.> ":" \\ pic ns v
   $ toList (zip ns env)
 
-check :: forall n. Env n -> Ns n -> Value n -> Expr n -> Either Err ()
+check :: forall n. Env n -> Ns n -> Value n -> Expr n -> M ()
 check env ns ty (pos :@ expr) = do
   let n = len env
   case expr of
@@ -125,8 +142,9 @@ check env ns ty (pos :@ expr) = do
       other -> do
         failWithEnv pos env ns $ IsNotOfType (pic ns other) (pic ns (pos :@ expr))
 
-    ExprHole name -> do
-      failWithEnv pos env ns $ Hole name (pic ns ty)
+    ExprHole _ name -> do
+      tell [TypedHole name pos (Just (pic ns ty)) (dumpEnv env ns)]
+      pure ()
 
     ExprLetRec d dNs tys vals k -> do
       -- get declaration names (dNs) and types (dEnv)
@@ -149,11 +167,34 @@ check env ns ty (pos :@ expr) = do
       ty' <- infer env ns (pos :@ other)
       unify pos env ns ty ty'
 
-infer :: forall n. Env n -> Ns n -> Expr n -> Either Err (Value n)
+infer :: forall n. Env n -> Ns n -> Expr n -> M (Value n)
 infer env ns (pos :@ expr) = do
   let n = len env
   case expr of
+    ExprHole _ name -> do
+      tell [TypedHole name pos Nothing (dumpEnv env ns)]
+      pure (ValueNeutral (NeutralHole name))
+
     ExprVar ptr -> pure (index ptr env)
+
+    ExprU -> do
+      pure ValueU
+
+    ExprPi {argName, argTy, resTy} -> do
+      check                        env               ns  ValueU argTy
+      check (s' n (eval n argTy :> env)) (argName :> ns) ValueU resTy
+      pure ValueU
+
+    ExprSigma {fstName, fstTy, sndTy} -> do
+      check                        env               ns  ValueU fstTy
+      check (s' n (eval n fstTy :> env)) (fstName :> ns) ValueU sndTy
+      pure ValueU
+
+    ExprEq x y -> do
+      a <- infer env ns x
+      check env ns a y
+      pure ValueU
+
     ExprApp f x -> do
       ty <- infer env ns f  -- infer function type
       case ty of
@@ -214,7 +255,10 @@ infer env ns (pos :@ expr) = do
             $ SkolemEscaped (index used ((.pos) <$> dNs))
             $ pPrint $ index used dNs
 
-assertTypeAndEval :: Env n -> Ns n -> Expr n -> Either Err (Value n)
+    _ -> do
+      failWithEnv pos env ns $ CannotInferCtor pos
+
+assertTypeAndEval :: Env n -> Ns n -> Expr n -> M (Value n)
 assertTypeAndEval env ns ty = do
   check env ns ValueU ty
   pure (eval (len env) ty)
@@ -231,7 +275,7 @@ s = thin . Drop . every
 s' :: (Functor f) => NatS n -> f (Value n) -> f (Value (S n))
 s' = fmap . s
 
-unify :: Pos -> Env n -> Ns n -> Value n -> Value n -> Either Err ()
+unify :: Pos -> Env n -> Ns n -> Value n -> Value n -> M ()
 unify pos env ns l r = do
   unless (l == r) do
     failWithEnv pos env ns $ Mismatch (pic ns l) (pic ns r)

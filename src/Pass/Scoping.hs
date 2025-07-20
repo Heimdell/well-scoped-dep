@@ -53,7 +53,10 @@ findNot name = \case
 
 check :: Vec n Name -> In.Expr -> Either Err (Out.Expr n)
 check env (pos In.:@ expr) = (pos Out.:@) <$> case expr of
-  In.ExprVar name -> Out.ExprVar <$> find name env
+  In.ExprVar name ->
+    case find name env of
+      Right var -> pure (Out.ExprVar var)
+      Left  _   -> pure Out.ExprHole {accident = True, name}
 
   In.ExprU -> pure Out.ExprU
 
@@ -107,7 +110,7 @@ check env (pos In.:@ expr) = (pos Out.:@) <$> case expr of
       <*> check env px
       <*> check env eq
 
-  In.ExprHole name -> pure (Out.ExprHole name)
+  In.ExprHole {accident, name} -> pure Out.ExprHole {accident, name}
 
   In.ExprLetRec decls k -> do
     for_ decls \(n, _, _) -> do

@@ -36,6 +36,7 @@ instance Substitutes Neutral where
   subst :: NatS bs -> Subst as bs -> Neutral as -> Value bs
   subst bs s = \case
     NeutralVar     var           -> index var s
+    NeutralHole    hole          -> ValueNeutral (NeutralHole hole)
     NeutralApp     f x           -> apply     bs (subst bs s f) (subst bs s x)
     NeutralUncurry fst snd p k   -> uncurry   bs  fst snd (subst bs s p) (subst (NatS (NatS bs)) (extend (NatS bs) (extend bs s)) k)
     NeutralTransp  a x y p px eq -> transport

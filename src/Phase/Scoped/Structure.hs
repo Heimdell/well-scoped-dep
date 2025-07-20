@@ -102,7 +102,7 @@ data Expr_ (n :: Nat)
   | ExprTransp
       { a, x, y, p, px, eq :: Expr n }
 
-  | ExprHole Name
+  | ExprHole { accident :: Bool, name :: Name }
 
   |  -- | Взаимно-рекурсивные объявления
      --   > let rec

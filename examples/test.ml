@@ -14,12 +14,12 @@ let-rec
         , y
         , z
         , \x' -> x == x'
-        , xy
-        , yz
+        , ?xy
+        , ?yz
         )
   ; sym
     : [A : Type, x : A, y : A, eq : x == y] -> y == x
     = \A, x, y, eq ->
-      transport(A, x, y, \x' -> x' == x, ?rofl, eq)
+      transport(A, x, y, \x' -> x' == ?x, ?rofl, eq)
 in
   comp

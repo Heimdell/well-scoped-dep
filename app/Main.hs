@@ -12,6 +12,8 @@ import Pass.Scoping as Scoping
 import Pass.Typing as Typing
 import Pass.Eval
 import Phase.Scoped ()
+import Control.Monad.Except (runExceptT)
+import Control.Monad.Writer
 
 main :: IO ()
 main = do
@@ -29,13 +31,17 @@ main = do
       case Scoping.check Nil a of
         Left err -> print (pPrint err)
         Right a' -> do
-          case Typing.infer Nil Nil a' of
-            Left (err, scope, pos) -> do
+          case runWriter $ runExceptT $ Typing.infer Nil Nil a' of
+            (Left (err, scope, pos), warn) -> do
               print (pPrint err)
               print (pPrint pos)
               print (vcat ["Scope:", nest 2scope])
+              putStrLn ""
+              for_ warn (print . pPrint)
 
-            Right a'' -> do
+            (Right a'', warn) -> do
               print (pic Nil (eval NatO a'))
               putStrLn ":"
               print (pic Nil a'')
+              putStrLn ""
+              for_ warn (print . pPrint)

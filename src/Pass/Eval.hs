@@ -40,11 +40,11 @@ eval bs (_ :@ expr) = case expr of
     (eval bs px)
     (eval bs eq)
 
-  ExprHole name -> error $ "Typed hole remains in `eval`: ?" <> show (pPrint name)
+  ExprHole _ name -> ValueNeutral (NeutralHole name)
 
-  ExprLetRec d _names _tys vals rest -> do
+  ExprLetRec d _names _tys (fmap (eval (add d bs)) -> vals) rest -> do
     let
-      decls' = fmap (subst bs sub . eval (add d bs)) vals
+      decls' = fmap (subst bs sub) vals
       sub    = decls' +++ keep bs
 
     subst bs sub (eval (d `add` bs) rest)

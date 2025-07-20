@@ -28,6 +28,7 @@ instance Thinning Neutral where
   thin :: as <= bs -> Neutral as -> Neutral bs
   thin th = \case
     NeutralVar     var           -> NeutralVar     (var `o` th)
+    NeutralHole    hole          -> NeutralHole     hole
     NeutralApp     f x           -> NeutralApp     (thin th f) (thin th x)
     NeutralUncurry fst snd p k   -> NeutralUncurry  fst snd (thin th p) (thin (Keep (Keep th)) k)
     NeutralTransp  a x y p px eq -> NeutralTransp  (thin th a) (thin th x) (thin th y) (thin th p) (thin th px) (thin th eq)
